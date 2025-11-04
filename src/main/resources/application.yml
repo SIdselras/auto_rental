@@ -1,0 +1,41 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/auto_rental?useUnicode=true&CharacterEncoding
+    username: root
+    password: zxy981217
+  jackson:
+    data-format: yyyy-MM-dd
+    time-zone: Asia/Shanghai
+  mvc:
+    format:
+      date: dd-MM-yyyy
+      date-time: yyyy-MM-dd HH:mm:ss
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 9
+      password: 123456  # 添加密码
+      timeout: 10000
+      expire: 60000
+mybatis-plus:
+  configurations:
+    log-impl: org.apache.ibatis.logging.stdOut.StdOutImpl
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.coder.entity
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+#密码加密配置
+encoder:
+  ctype:
+    strength: 6
+    secret: ${random.uuid}
+
+request:
+  login-url: /rental/user/login
+

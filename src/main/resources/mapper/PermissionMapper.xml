@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxy.rental.mapper.PermissionMapper">
+
+    <select id="selectPermissionListByUserId"
+            resultType="com.zxy.rental.entity.Permission">
+        SELECT distinct
+            p.id,
+            p.permission_label,
+            p.pid,
+            p.parent_label,
+            p.permission_code,
+            p.route_path,
+            p.route_name,
+            p.route_url,
+            p.permission_type,
+            p.icon
+        FROM sys_user u
+        LEFT JOIN sys_user_role ur ON u.id = ur.user_id
+        LEFT JOIN sys_role r ON ur.role_id = r.id
+        LEFT JOIN sys_role_permission rp ON r.id = rp.role_id
+        LEFT JOIN sys_permission p ON rp.permission_id = p.id
+        WHERE u.id = #{userId}
+        ORDER BY p.id, p.order_num
+    </select>
+</mapper>
