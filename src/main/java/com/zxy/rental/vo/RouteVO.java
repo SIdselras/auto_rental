@@ -1,5 +1,6 @@
 package com.zxy.rental.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.List;
  * @project auto_rental
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
@@ -20,6 +22,7 @@ public class RouteVO {
     private String path;
     private String component;
     private String name;
+    private Boolean alwaysShow;
 
     private Meta meta;
     private List<RouteVO> children;
@@ -29,7 +32,6 @@ public class RouteVO {
     @AllArgsConstructor
     @Accessors(chain = true)
     public class Meta{
-        private Boolean alwaysShow;
         private String title;
         private String icon;
         private Object[] roles;

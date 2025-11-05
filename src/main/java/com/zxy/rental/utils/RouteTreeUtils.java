@@ -32,17 +32,16 @@ public class RouteTreeUtils {
                     routeVO.setName(permission.getRouteName());// 设置路由名称
 
                     // 判断是否为根路径菜单，并设置相应的组件和显示属性,todo
-                    Boolean alwaysShow = null;
                     if (permission.getPid() == 0) {
                         routeVO.setComponent("Layout");
-                        alwaysShow = true;
+                        routeVO.setAlwaysShow(true);
                     } else {
                         routeVO.setComponent(permission.getRouteUrl());
-                        alwaysShow = false;
+                        routeVO.setAlwaysShow(false);
                     }
 
                     // 设置路由的元信息，包括权限标签、图标和权限代码
-                    routeVO.setMeta(routeVO.new Meta(alwaysShow, permission.getPermissionLabel(),
+                    routeVO.setMeta(routeVO.new Meta(permission.getPermissionLabel(),
                             permission.getIcon(),
                             permission.getPermissionCode().split(",")));
 

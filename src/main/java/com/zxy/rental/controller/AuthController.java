@@ -20,10 +20,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,18 +93,26 @@ public class AuthController {
      * 获取用户信息
      * @return
      */
-    @GetMapping("/info")
+    @GetMapping("/getInfo")
     @ApiOperation("前端获取用户信息")
     public Result getUserInfo(){
+        // 从securityContextHolder上下文中获取认证信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null){
-            return Result.fail("认证信息为空");
+        if (authentication == null) {
+            return Result.fail().setMessage("认证信息为空");
         }
         User user = (User) authentication.getPrincipal();
-        List<String> list = userService.selectRoleNameByUserId(user.getId());
-        Object[] array = list.toArray();
-        UserInfoVO userInfoVO = new UserInfoVO(user.getId(), user.getUsername(), user.getAvatar(), user.getNickname(), array);
-        return Result.success(userInfoVO).setMessage("获取用户信息成功");
+        // 查询用户角色名称
+        /*List<String> list = userService.selectRoleName(user.getId());
+        Object[] array = list.toArray(); */// 将角色名称列表转换为数组
+        List<Permission> permissionList = user.getPermissionList();
+        Object[] array = permissionList.stream().filter(Objects::nonNull)
+                .map(Permission::getPermissionCode)
+                .toArray();
+        // 创建并填充用户信息视图对象
+        UserInfoVO userInfoVo = new UserInfoVO(user.getId(), user.getUsername(),
+                user.getAvatar(), user.getNickname(), array);
+        return Result.success(userInfoVo).setMessage("获取用户信息成功");
     }
 
     @GetMapping("/menuList")
@@ -121,5 +131,22 @@ public class AuthController {
 
         List<RouteVO> routeVOList = RouteTreeUtils.buildRouteTree(permissionList, 0);
         return Result.success(routeVOList).setMessage("获取菜单列表成功");
+    }
+
+    @PostMapping("/logout")
+    public Result logout(HttpServletRequest request, HttpServletResponse response){
+        String token=request.getHeader("token");
+        if (StrUtil.isEmpty(token)){
+            token=request.getParameter("token");
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication!=null){
+            //用户一旦登出系统，则清除redis中的token
+            redisUtils.del("token:"+token);
+            SecurityContextLogoutHandler handler = new SecurityContextLogoutHandler();
+            handler.logout(request,response,authentication);
+            return Result.success().setMessage("登出成功");
+        }
+        return Result.fail().setMessage("登出失败");
     }
 }

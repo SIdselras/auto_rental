@@ -59,7 +59,7 @@ public class Permission implements Serializable {
     private String routeUrl;
 
     @ApiModelProperty("权限类型 0-根目录  1-子目录  2-按钮级别")
-    private Boolean permissionType;
+    private Integer permissionType;
 
     @ApiModelProperty("图标地址")
     private String icon;
