@@ -1,5 +1,6 @@
 package com.zxy.rental.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zxy.rental.entity.AutoMaker;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,5 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2025-10-31
  */
 public interface IAutoMakerService extends IService<AutoMaker> {
-
+    Page<AutoMaker> search(int start, int size, AutoMaker autoMaker);
 }
